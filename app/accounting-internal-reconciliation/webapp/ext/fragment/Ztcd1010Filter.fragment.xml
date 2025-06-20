@@ -1,0 +1,9 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+        <DatePicker
+            id="YearMonth"
+            displayFormat="yyyyMM"
+            valueFormat="yyyyMM"
+            value="{= ${filterValues>} ? ${filterValues>}.substring(1) : null}"
+            change="handler.onChangeDatePicker"
+        />
+</core:FragmentDefinition>

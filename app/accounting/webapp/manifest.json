@@ -1,0 +1,196 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "accounting",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.18.0",
+      "toolsId": "9c40b890-fe10-45f2-9c1c-1823ada54794"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/excel-upload/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.fe": {
+    "macros": {
+      "filter": {
+        "customFilterOperators": [
+          {
+            "name": "accounting.ext.fragment.Ztcd1000Filter.onChangeDatePicker"
+          }
+        ]
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    
+    "paths": {
+      "accounting": "./",
+      "accounting.ext.fragment": "./ext/fragment/"
+    },
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "accounting.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true,
+          "synchronizationMode": "None"
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "componentUsages": {
+      "spreadsheetImporter": {
+        "name": "cc.spreadsheetimporter.v2_1_0"
+      }
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ListZTCD1000List",
+          "target": "ListZTCD1000List"
+        }
+      ],
+      "targets": {
+        "ListZTCD1000List": {
+          "type": "Component",
+          "id": "ListZTCD1000List",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "share": {
+                "showSendEmail": false
+              },
+              "contextPath": "/ListZTCD1000",
+              "variantManagement": "None",
+              "navigation": {},
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "selectionMode": "Single",
+                    "selectAll": false,
+                    "selectionLimit": 0,
+                    "widthIncludingColumnHeader": true,
+                    "personalization": {
+                      "filter": true
+                    },
+                    "quickVariantSelection": {
+                      "showCounts": true
+                    }
+                  },
+                  "navigationProperties": {},
+                  "actions": {
+                    "ListZTCD1000extController": {
+                      "press": "accounting.ext.ListZTCD1000extController.openSpreadsheetUploadDialogTable",
+                      "visible": true,
+                      "requireSelection": false,
+                      "enabled": "{ui/>isEditable}",
+                      "text": "엑셀 업로드"
+                    }
+                  }
+                },
+                "@com.sap.vocabularies.UI.v1.SelectionFields": {
+                  "filterFields": {
+                    "YearMonth": {
+                      "label": "결산년월",
+                      "property": "yyyymm",
+                      "template": "accounting.ext.fragment.Ztcd1000Filter",
+                      "position": {
+                        "placement": "After"
+                      },
+                      "required": false
+                    }
+                  }
+                }
+              },
+              "initialLoad": "Enabled",
+              "hideFilterBar": false,
+              "header": {
+                "visible": true,
+                "showShare": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ListReport.ListReportController#accounting::ListZTCD1000List": {
+            "controllerName": "accounting.ext.controller.ListZtcd1000"
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

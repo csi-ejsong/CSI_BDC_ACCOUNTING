@@ -1,0 +1,73 @@
+{
+  "name": "CSI_BDC_ACCOUNTING",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js/hana": "^1",
+    "@sap/cds": "^8",
+    "@sap/xssec": "^4",
+    "express": "^4",
+    "ui5-cc-spreadsheetimporter": "^2.1.0"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.10.0",
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^8",
+    "mbt": "^1.2.29",
+    "rimraf": "^5.0.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-accounting": "cds watch --open accounting/webapp/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy CSI_BDC_ACCOUNTING --delete-services --delete-service-keys --delete-service-brokers",
+    "build:ui5": "ui5 build --all",
+    "build:mta": "rimraf resources mta_archives && mbt build --mtar archive",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-trial-balance-upload": "cds watch --open trial-balance-upload/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-accounting-rev": "cds watch --open accounting-rev/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-accounting-internal": "cds watch --open accounting-internal/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-accounting-internal-reconciliation": "cds watch --open accounting-internal-reconciliation/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-accounting-internal-recon-custom": "cds watch --open accounting-internal-recon-custom/webapp/index.html?sap-ui-xx-viewCache=false"
+  },
+  "cds": {
+    "folders": {
+      "db": "db",
+      "srv": "srv/cds/"
+    },
+    "build": {
+      "target": "gen",
+      "tasks": [
+        {
+          "for": "hana",
+          "options": {
+            "model": [
+              "db/cds/cm",
+              "db/cds/fm",
+              "db/cds/util",
+              "srv/cds"
+            ],
+            "skimCompact": true
+          }
+        }
+      ]
+    },
+    "requires": {
+      "auth": "xsuaa"
+    },
+    "sql": {
+      "native_hana_associations": false
+    }
+  },
+  "sapux": [
+    "app/accounting",
+    "app/trial-balance-upload",
+    "app/accounting-rev",
+    "app/accounting-internal",
+    "app/accounting-internal-reconciliation",
+    "app/accounting-internal-recon-custom"
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "accountinginternalreconciliation",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.18.0",
+      "toolsId": "6445ce40-f533-48e4-b6ee-f6dfbb0849f6"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/excel-upload/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {},
+        "sap.f": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "accountinginternalreconciliation.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ListZTCD1010List",
+          "target": [
+            "ListZTCD1010List"
+          ]
+        }
+      ],
+      "targets": {
+        "ListZTCD1010List": {
+          "type": "Component",
+          "id": "ListZTCD1010List",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/ListZTCD1010",
+              "variantManagement": "None",
+              "navigation": {},
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "columns": {
+                    "DataField::com_code": {
+                      "width": "8em"
+                    },
+                    "DataField::com_name": {
+                      "width": "10em"
+                    },
+                    "DataField::account_code": {
+                      "width": "8em"
+                    },
+                    "DataField::account_name": {
+                      "width": "10em"
+                    },
+                    "DataField::trd_com_code": {
+                      "width": "8em"
+                    },
+                    "DataField::trd_com_name": {
+                      "width": "10em"
+                    }
+                  },
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "widthIncludingColumnHeader": false,
+                    "condensedTableLayout": true,
+                    "selectAll": true,
+                    "selectionMode": "Single",
+                    "personalization": {
+                      "column": true
+                    }
+                  }
+                },
+                "@com.sap.vocabularies.UI.v1.SelectionFields": {
+                  "filterFields": {
+                    "YearMonth": {
+                      "label": "결산년월",
+                      "property": "yyyymm",
+                      "template": "accountinginternalreconciliation.ext.fragment.Ztcd1010Filter",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "com_code"
+                      },
+                      "required": false
+                    }
+                  }
+                }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "Reconciliation": {
+                      "press": "accountinginternalreconciliation.ext.controller.Reconciliation.callCheckInternal",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "내부거래대사 실행",
+                      "position": {
+                        "placement": "After"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ListReport.ListReportController#accountinginternalreconciliation::ListZTCD1010List": {
+            "controllerName": "accountinginternalreconciliation.ext.controller.ListZTCD1010"
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

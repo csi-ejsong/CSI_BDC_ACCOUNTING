@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m">
+        <DatePicker
+            core:require="{
+                handler: 'accounting/ext/fragment/Ztcd1000Filter',
+                Value: 'sap/fe/macros/filter/type/Value'
+            }"
+            id="YearMonth"
+            displayFormat="yyyyMM"
+            valueFormat="yyyyMM"
+            value="{= ${filterValues>} ? ${filterValues>}.substring(1) : null}"
+            change="handler.onChangeDatePicker"
+        />
+</core:FragmentDefinition>

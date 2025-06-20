@@ -1,0 +1,185 @@
+PROCEDURE "check_internal"( 
+   IN  IV_YYYYMM               VARCHAR(6)
+)
+--        mandt        : String(10)           
+--        yyyymm       : String(30)      -- 기준년월     
+--        com_code     : String(10)      -- 법인코드
+--        com_name     : String(30)      -- 법인명     
+--        trd_com_code : String(10)      -- 거래법인코드     
+--        trd_com_name : String(30)      -- 거래법인명     
+--        account_code : String(10)      -- 계정코드     
+--        account_name : String(30)      -- 계정명
+--        ocdate       : String(8)       -- 증빙일자     
+--        transtype    : String(2)       -- 거래유형     
+--        matchkey     : String(10)      -- 대사키     
+--        amt          : Decimal(15, 3)  -- 금액     
+--        def_Amt      : Decimal(15, 3)  -- 차이금액     
+--        detail_desc                    -- 비고
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   --DEFAULT SCHEMA <default_schema_name>
+   --READS SQL DATA 
+   AS
+
+
+BEGIN
+   /*************************************
+                변수 선언   
+   *************************************/
+
+   DECLARE V_MAX_MATCHKEY NVARCHAR(30);
+   DECLARE VT_OCDATE    TABLE ("OCDATE" VARCHAR(8));
+   DECLARE VT_ROWNUM    TABLE ("ROWNUM" VARCHAR(30), "OCDATE" VARCHAR(8));
+   DECLARE VT_MATCHKEY  TABLE ("OCDATE" VARCHAR(8), "MATCHKEY" VARCHAR(30));
+   DECLARE VT_FINALLIST TABLE (
+        "YYYYMM" NVARCHAR(6),
+        "COM_CODE" NVARCHAR(10),
+        "COM_NAME" NVARCHAR(30),
+        "TRD_COM_CODE" NVARCHAR(10),
+        "TRD_COM_NAME" NVARCHAR(30),
+        "ACCOUNT_CODE" NVARCHAR(10),
+        "ACCOUNT_NAME" NVARCHAR(30),
+        "OCDATE" NVARCHAR(8),
+        "TRANSTYPE" NVARCHAR(2),
+        "MATCHKEY" NVARCHAR(30),
+        "AMT" DECIMAL(15,3),
+        "DEF_AMT" DECIMAL(15,3),
+        "DETAIL_DESC" NVARCHAR(50)
+    );
+   DECLARE VT_COLLECTSUM TABLE (
+      "YYYYMM"       NVARCHAR(6),
+      "COM_CODE"     NVARCHAR(10),
+      "TRD_COM_CODE" NVARCHAR(10),
+      "MATCHKEY"     NVARCHAR(30),
+      "AMT"          DECIMAL(15,3)
+   );
+   DECLARE VT_CALCDEFAMT TABLE (
+      "YYYYMM"       NVARCHAR(6),
+      "COM_CODE"     NVARCHAR(10),
+      "TRD_COM_CODE" NVARCHAR(10),
+      "MATCHKEY"     NVARCHAR(30),
+      "DEF_AMT"      DECIMAL(15,3)
+   );
+   DECLARE EXIT HANDLER FOR SQLEXCEPTION
+
+   /*************************************
+            1. Max Matchkey 찾기   
+   *************************************/
+
+   SELECT MAX("MATCHKEY") 
+   INTO   V_MAX_MATCHKEY
+   FROM   "FM_ZTCD1010"
+   WHERE  "YYYYMM" = IV_YYYYMM;
+
+   IF V_MAX_MATCHKEY IS NULL THEN 
+      V_MAX_MATCHKEY = '1000000000';
+   END IF;
+
+   /*************************************
+      2. 매칭되지 않은 거래 일자 목록 찾기   
+   *************************************/
+
+   VT_OCDATE = SELECT DISTINCT "OCDATE" AS OCDATE
+               FROM            "FM_ZTCD1010"
+               WHERE           "YYYYMM" = IV_YYYYMM 
+               AND             ("MATCHKEY" = '' OR "MATCHKEY" IS NULL)
+               ORDER BY        "OCDATE";      
+   
+   /*************************************
+      3. ROW NUMBER 생성   
+   *************************************/
+
+   VT_ROWNUM = SELECT ROW_NUMBER() OVER(ORDER BY "OCDATE") AS ROWNUM, "OCDATE"
+               FROM   :VT_OCDATE;
+   
+   /*************************************
+      4. MATCHKEY 생성 
+   *************************************/
+
+   VT_MATCHKEY = SELECT "OCDATE", :V_MAX_MATCHKEY + "ROWNUM" AS MATCHKEY
+                 FROM   :VT_ROWNUM;
+
+   /*************************************
+      5. MATCHKEY 조인 & Update Matchkey
+   *************************************/
+   
+   VT_FINALLIST = SELECT A."YYYYMM",
+                         A."COM_CODE", 
+                         A."COM_NAME", 
+                         A."TRD_COM_CODE" , 
+                         A."TRD_COM_NAME", 
+                         A."ACCOUNT_CODE", 
+                         A."ACCOUNT_NAME", 
+                         A."OCDATE", 
+                         A."TRANSTYPE", 
+                         B."MATCHKEY", 
+                         A."AMT", 
+                         A."DEF_AMT", 
+                         A."DETAIL_DESC"
+                  FROM   "FM_ZTCD1010" A
+                  INNER JOIN :VT_MATCHKEY B
+                          ON A."OCDATE" = B."OCDATE"
+                  WHERE A."YYYYMM" = :IV_YYYYMM;  
+
+   /*************************************
+      6. SUM(AMT)
+   *************************************/
+
+   VT_COLLECTSUM = SELECT DISTINCT "YYYYMM", "COM_CODE", "TRD_COM_CODE", "MATCHKEY", SUM("AMT") AS AMT
+                   FROM :VT_FINALLIST 
+                   GROUP BY "YYYYMM", "COM_CODE", "TRD_COM_CODE", "MATCHKEY";
+   
+   /*************************************
+      7. CALCULATE SUM(차이)
+   *************************************/
+
+   VT_CALCDEFAMT = SELECT DISTINCT A."YYYYMM", A."COM_CODE", A."TRD_COM_CODE", A."MATCHKEY", SUM(A."AMT") - SUM(B."AMT") AS DEF_AMT
+                   FROM :VT_COLLECTSUM A
+                   INNER JOIN :VT_COLLECTSUM B
+                   ON A."MATCHKEY" = B."MATCHKEY"
+                   AND RIGHT(A."TRD_COM_CODE", 4) = B."COM_CODE"
+                   GROUP BY A."YYYYMM", A."COM_CODE", A."TRD_COM_CODE", A."MATCHKEY";
+
+   ZTCD1010_DATA = SELECT A."YYYYMM", A."COM_CODE", A."COM_NAME", 
+                           A."TRD_COM_CODE" , A."TRD_COM_NAME", A."ACCOUNT_CODE", 
+                           A."ACCOUNT_NAME", A."OCDATE", A."TRANSTYPE", 
+                           A."MATCHKEY", A."AMT", B."DEF_AMT", A."DETAIL_DESC"
+                   FROM :VT_FINALLIST A
+                   INNER JOIN :VT_CALCDEFAMT B
+                   ON  A."MATCHKEY" = B."MATCHKEY"
+                   AND A."COM_CODE" = B."COM_CODE"
+                   AND A."TRD_COM_CODE" = B."TRD_COM_CODE";
+   
+   SELECT A."YYYYMM",  A."COM_CODE",  A."ACCOUNT_CODE", A."MATCHKEY",  A."DEF_AMT"
+      FROM "FM_ZTCD1010" A
+      JOIN :ZTCD1010_DATA B
+         ON A."YYYYMM" = B."YYYYMM"
+         AND A."COM_CODE" = B."COM_CODE"
+         AND A."TRD_COM_CODE" = B."TRD_COM_CODE"
+         AND A."ACCOUNT_CODE" = B."ACCOUNT_CODE"
+         AND A."MATCHKEY" = B."MATCHKEY"
+         WHERE A."DEF_AMT" IS NULL;
+
+                  MERGE INTO "FM_ZTCD1010" AS A
+                  USING :VT_FINALLIST AS B
+                      ON A."YYYYMM" = B."YYYYMM"
+                     AND A."OCDATE" = B."OCDATE"
+                     AND A."COM_CODE" = B."COM_CODE"
+                     AND A."TRD_COM_CODE" = B."TRD_COM_CODE"
+                     AND A."ACCOUNT_CODE" = B."ACCOUNT_CODE" 
+                     AND (A."MATCHKEY" IS NULL OR A."MATCHKEY" = '')  -- 갱신 대상만
+                  WHEN MATCHED THEN
+                    UPDATE SET A."MATCHKEY" = B."MATCHKEY";
+
+                  MERGE INTO "FM_ZTCD1010" AS A
+                  USING :ZTCD1010_DATA AS B
+                     ON A."YYYYMM" = B."YYYYMM"
+                     AND A."COM_CODE" = B."COM_CODE"
+                     AND A."TRD_COM_CODE" = B."TRD_COM_CODE"
+                     AND A."ACCOUNT_CODE" = B."ACCOUNT_CODE"
+                     AND A."MATCHKEY" = B."MATCHKEY"
+                     AND A."DEF_AMT" IS NULL   -- 갱신 대상만
+                  WHEN MATCHED THEN
+                     UPDATE SET A."DEF_AMT" = B."DEF_AMT";
+
+END

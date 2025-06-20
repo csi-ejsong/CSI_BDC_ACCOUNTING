@@ -1,0 +1,218 @@
+_schema-version: 3.3.0
+ID: CSI_BDC_ACCOUNTING
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: CSI_BDC_ACCOUNTING-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: CSI_BDC_ACCOUNTING-auth
+  - name: CSI_BDC_ACCOUNTING-db
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    instances: 1
+  build-parameters:
+    builder: npm-ci
+- name: CSI_BDC_ACCOUNTING-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: CSI_BDC_ACCOUNTING-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: CSI_BDC_ACCOUNTING
+  type: approuter.nodejs
+  path: app/router
+  requires:
+  - name: srv-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: srv-api
+      url: ~{srv-url}
+  - name: CSI_BDC_ACCOUNTING-auth
+  - name: CSI_BDC_ACCOUNTING-destination-service
+    group: destinations
+    properties:
+      forwardAuthToken: false
+      name: ui5
+      url: https://ui5.sap.com
+  provides:
+  - name: app-api
+    properties:
+      app-protocol: ${protocol}
+      app-uri: ${default-uri}
+  parameters:
+    disk-quota: 256M
+    keep-existing-routes: true
+    memory: 256M
+- name: CSI_BDC_ACCOUNTING-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: CSI_BDC_ACCOUNTING-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - accounting.zip
+      name: accounting
+      target-path: resources/
+    - artifacts:
+      - accounting.zip
+      name: accounting
+      target-path: resources/
+    - artifacts:
+      - trialbalanceupload.zip
+      name: trialbalanceupload
+      target-path: resources/
+    - artifacts:
+      - accountingrev.zip
+      name: accountingrev
+      target-path: resources/
+    - artifacts:
+      - accountinginternal.zip
+      name: accountinginternal
+      target-path: resources/
+    - artifacts:
+      - accountinginternalreconciliation.zip
+      name: accountinginternalreconciliation
+      target-path: resources/
+    - artifacts:
+      - accountinginternalreconcustom.zip
+      name: accountinginternalreconcustom
+      target-path: resources/
+- name: accounting
+  type: html5
+  path: app/accounting
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: accounting
+  type: html5
+  path: app/accounting
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: trialbalanceupload
+  type: html5
+  path: app/trial-balance-upload
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: accountingrev
+  type: html5
+  path: app/accounting-rev
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: accountinginternal
+  type: html5
+  path: app/accounting-internal
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: accountinginternalreconciliation
+  type: html5
+  path: app/accounting-internal-reconciliation
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: accountinginternalreconcustom
+  type: html5
+  path: app/accounting-internal-recon-custom
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: CSI_BDC_ACCOUNTING-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      tenant-mode: dedicated
+      xsappname: CSI_BDC_ACCOUNTING-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+- name: CSI_BDC_ACCOUNTING-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: CSI_BDC_ACCOUNTING-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: CSI_BDC_ACCOUNTING-html5-service
+    service-plan: app-host
+- name: CSI_BDC_ACCOUNTING-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: CSI_BDC_ACCOUNTING-srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: CSI_BDC_ACCOUNTING-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production
