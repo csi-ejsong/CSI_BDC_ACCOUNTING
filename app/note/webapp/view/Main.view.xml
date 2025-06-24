@@ -1,0 +1,80 @@
+<mvc:View
+    controllerName="note.controller.Main"
+    xmlns="sap.ui.table"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:m="sap.m"
+    xmlns:f="sap.f"
+    height="100%"
+>
+    <m:Page
+        id="page"
+        title="{i18n>title}"
+    >
+        <f:DynamicPage>
+            <f:title>
+                <f:DynamicPageTitle>
+                    <f:heading>
+                        <m:Title text="HeaderTitle" />
+                    </f:heading>
+                    <f:expandedContent>
+						<m:Label text="This is a subheading"/>
+					</f:expandedContent>
+                    
+                <f:actions>
+                    <m:Button
+                        text="조회"
+                        type="Transparent"
+                        press="onClickDisplay"
+                    />
+                    <m:Button
+                        text="추출"
+                        type="Emphasized"
+                        press="onClickExtract"
+                    />
+                </f:actions>
+                
+                </f:DynamicPageTitle>
+            </f:title>
+            <f:content>
+                <TreeTable
+                    id="TreeTableNode"
+                    rows="{
+                    path: 'note>/',
+                    parameters: {
+                        arrayNames: ['children']
+                    }
+                }"
+                    alternateRowColors="false"
+                >
+                    <columns>
+                        <Column>
+                            <m:Label text="NO" />
+                            <template>
+                                <m:Text text="{note>note_code}" />
+                            </template>
+                        </Column>
+
+                        <Column>
+                            <m:Label text="메뉴명" />
+                            <template>
+                                <m:Text text="{note>note_name}" />
+                            </template>
+                        </Column>
+
+                        <Column>
+                            <m:Label text="구분" />
+                            <template>
+                                <m:Button
+                                    visible="{note>visible}"
+                                    text="열기"
+					                press=".onCellButtonPress"
+
+                                />
+                            </template>
+                        </Column>
+                    </columns>
+                </TreeTable>
+            </f:content>
+        </f:DynamicPage>
+    </m:Page>
+</mvc:View>

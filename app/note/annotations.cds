@@ -1,0 +1,1 @@
+using cm.noteService as service from '../../srv/cds/cmMasterNote';

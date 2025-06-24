@@ -89,6 +89,10 @@ modules:
       - accountinginternalreconcustom.zip
       name: accountinginternalreconcustom
       target-path: resources/
+    - artifacts:
+      - note.zip
+      name: note
+      target-path: resources/
 - name: accounting
   type: html5
   path: app/accounting
@@ -152,6 +156,16 @@ modules:
 - name: accountinginternalreconcustom
   type: html5
   path: app/accounting-internal-recon-custom
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: note
+  type: html5
+  path: app/note
   build-parameters:
     build-result: dist
     builder: custom

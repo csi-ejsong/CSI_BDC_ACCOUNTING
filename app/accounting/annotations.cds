@@ -117,7 +117,7 @@ annotate service.ListZTCD1000 with @(
             $Type: 'UI.DataField',
             Value: system_create_dtm,
             ![@UI.Hidden],
-        }
+        },
     ],
     UI.SelectionFields : [
         com_code

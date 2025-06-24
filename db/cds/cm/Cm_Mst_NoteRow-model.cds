@@ -1,0 +1,15 @@
+namespace cm;
+using util from '../util/util-model';
+
+entity Mst_NoteRow {
+      key note_row      : String(10) not null @title: '주석행';
+          note_row_name : String(30)          @title: '주석행명';
+          level         : Integer             @title: '레벨';
+          upperrow      : String(10)          @title: '상위주석행';
+          sortorder     : Integer             @title: '정렬순서';
+          attribute1    : String(100)         @title: '예비1';
+          attribute2    : String(100)         @title: '예비2';
+          attribute3    : String(100)         @title: '예비3';
+}
+
+extend Mst_NoteRow with util.Managed;

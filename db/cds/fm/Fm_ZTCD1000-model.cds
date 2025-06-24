@@ -7,9 +7,9 @@ using { cm.Mst_Account as Account } from '../cm/Cm_Mst_Account-model';
 entity ZTCD1000 {
     key mandt        : String(10)                   not null @title: 'MANDT';
     key yyyymm       : String(30)                   not null @title: '결산년월';
-    key code     : Association to Company       not null @title: '법인코드';
+    key com_code     : String(10)                   not null @title: '법인코드';
         com_name     : String(30)                            @title: '법인명';
-    key account_code : String(10)       not null @title: '계정코드';
+    key account_code : String(10)                   not null @title: '계정코드';
         account_name : String(30)                            @title: '계정명';
         amt          : Decimal(15, 3)               not null @title: '금액';
         attribute1   : String(200)                           @title: '예비1';

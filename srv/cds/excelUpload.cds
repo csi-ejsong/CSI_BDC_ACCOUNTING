@@ -14,7 +14,7 @@ service excelUploadService {
     
         key mandt,
         key yyyymm,
-        key code,
+        key com_code,
         com_name,
         key account_code,
         account_name,

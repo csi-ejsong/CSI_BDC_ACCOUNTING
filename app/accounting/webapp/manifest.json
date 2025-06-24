@@ -94,13 +94,6 @@
         "uri": "i18n/i18n.properties"
       }
     },
-    "resources": {
-      "css": [
-        {
-          "uri": "css/style.css"
-        }
-      ]
-    },
     "componentUsages": {
       "spreadsheetImporter": {
         "name": "cc.spreadsheetimporter.v2_1_0"
