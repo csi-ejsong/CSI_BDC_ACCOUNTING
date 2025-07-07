@@ -1,7 +1,7 @@
 {
   "_version": "1.65.0",
   "sap.app": {
-    "id": "note",
+    "id": "notedetail",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -13,7 +13,7 @@
     "sourceTemplate": {
       "id": "@sap/generator-fiori:basic",
       "version": "1.18.0",
-      "toolsId": "e9c72760-d805-4bbc-99c6-3da44183c8c6"
+      "toolsId": "0a0437c2-76d1-4ae1-9fe6-e253479f6f8a"
     },
     "dataSources": {
       "mainService": {
@@ -59,7 +59,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "note.i18n.i18n"
+          "bundleName": "notedetail.i18n.i18n"
         }
       },
       "": {
@@ -87,9 +87,9 @@
         "transition": "slide",
         "type": "View",
         "viewType": "XML",
-        "path": "note.view",
+        "path": "notedetail.view",
         "async": true,
-        "viewPath": "note.view"
+        "viewPath": "notedetail.view"
       },
       "routes": [
         {
@@ -118,7 +118,7 @@
       }
     },
     "rootView": {
-      "viewName": "note.view.App",
+      "viewName": "notedetail.view.App",
       "type": "XML",
       "id": "App",
       "async": true

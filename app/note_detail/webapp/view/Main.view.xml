@@ -1,5 +1,5 @@
 <mvc:View
-    controllerName="note.controller.Main"
+    controllerName="notedetail.controller.Main"
     xmlns="sap.ui.table"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:m="sap.m"
@@ -13,7 +13,7 @@
                     <m:Title text="{i18n>title}" />
                 </f:heading>
                 <f:expandedContent>
-                    <m:Label text="This is a subheading" />
+                    <m:Label text="{i18n>subheading}" />
                 </f:expandedContent>
 
                 <f:actions>
@@ -21,13 +21,6 @@
                         text="조회"
                         type="Transparent"
                         press="onClickDisplay"
-                        width="5rem"
-                    />
-                    <m:Button
-                        text="추출"
-                        type="Emphasized"
-                        press="onPressExecute"
-                        width="5rem"
                     />
                 </f:actions>
             </f:DynamicPageTitle>
@@ -38,11 +31,12 @@
                 rows="{
                     path: 'note>/',
                     parameters: {
-                        arrayNames: ['children'],    
+                        arrayNames: ['children'],
                             numberOfExpandedLevels: 2
                     }
                 }"
-                alternateRowColors="false">
+                alternateRowColors="false"
+            >
                 <columns>
                     <Column>
                         <m:Label text="NO" />

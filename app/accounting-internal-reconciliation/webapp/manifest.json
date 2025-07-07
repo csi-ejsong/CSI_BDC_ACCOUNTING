@@ -106,13 +106,13 @@
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "columns": {
                     "DataField::com_code": {
-                      "width": "8em"
+                      "width": "5em"
                     },
                     "DataField::com_name": {
                       "width": "10em"
                     },
                     "DataField::account_code": {
-                      "width": "8em"
+                      "width": "5em"
                     },
                     "DataField::account_name": {
                       "width": "10em"

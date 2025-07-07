@@ -1,7 +1,7 @@
 {
   "_version": "1.65.0",
   "sap.app": {
-    "id": "note",
+    "id": "notemenu",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -12,8 +12,8 @@
     "resources": "resources.json",
     "sourceTemplate": {
       "id": "@sap/generator-fiori:basic",
-      "version": "1.18.0",
-      "toolsId": "e9c72760-d805-4bbc-99c6-3da44183c8c6"
+      "version": "1.18.1",
+      "toolsId": "7e8c15a2-1ef5-4c32-9753-b2fbcf6fae0a"
     },
     "dataSources": {
       "mainService": {
@@ -21,6 +21,13 @@
         "type": "OData",
         "settings": {
           "annotations": [],
+          "odataVersion": "4.0"
+        }
+      },
+      "commonService": {
+        "uri": "/odata/v4/excel-upload/",
+        "type": "OData",
+        "settings": {
           "odataVersion": "4.0"
         }
       }
@@ -59,7 +66,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "note.i18n.i18n"
+          "bundleName": "notemenu.i18n.i18n"
         }
       },
       "": {
@@ -69,6 +76,15 @@
           "operationMode": "Server",
           "autoExpandSelect": true,
           "earlyRequests": true
+        }
+      },
+      "commonService": {
+        "type": "sap.ui.model.odata.v4.ODataModel",
+        "dataSource": "commonService",
+        "settings": {
+          "operationMode": "Server",
+          "synchronizationMode": "None",
+          "autoExpandSelect": true
         }
       }
     },
@@ -87,9 +103,9 @@
         "transition": "slide",
         "type": "View",
         "viewType": "XML",
-        "path": "note.view",
+        "path": "notemenu.view",
         "async": true,
-        "viewPath": "note.view"
+        "viewPath": "notemenu.view"
       },
       "routes": [
         {
@@ -118,7 +134,7 @@
       }
     },
     "rootView": {
-      "viewName": "note.view.App",
+      "viewName": "notemenu.view.App",
       "type": "XML",
       "id": "App",
       "async": true

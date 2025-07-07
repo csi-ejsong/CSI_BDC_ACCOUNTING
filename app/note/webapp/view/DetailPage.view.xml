@@ -1,25 +1,49 @@
-<mvc:View xmlns:table="sap.ui.table" controllerName="note.controller.DetailPage"
+<mvc:View
+    xmlns:table="sap.ui.table"
+    controllerName="note.controller.DetailPage"
     displayBlock="true"
     xmlns="sap.ui.table"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:m="sap.m"
-    xmlns:f="sap.f">
-    <m:Page title="DetailPage">
-        <f:DynamicPage >
+    xmlns:f="sap.f"
+>
+        <f:DynamicPage>
+            <f:title>
+                <f:DynamicPageTitle>
+                    <f:heading>
+                        <m:Title text="{note>/detail}" />
+                    </f:heading>
+                    <f:expandedContent>
+                        <m:Label text="This is a subheading" />
+                    </f:expandedContent>
+                    <f:actions>
+                        <m:Button
+                            text="조회"
+                            type="Transparent"
+                            press="onClickDisplay"
+                        />
+                        <m:Button
+                            text="저장"
+                            type="Emphasized"
+                            press="onClickSaveDetail"
+                        />
+                    </f:actions>
+                </f:DynamicPageTitle>
+            </f:title>
+
             <f:content>
-                <TreeTable 
+                <TreeTable
                     id="TreeTableDetail"
                     rows="{
                         path: 'row>/',
                         parameters: {
-                            arrayNames: ['children']
+                            arrayNames: ['children'],    
+                            numberOfExpandedLevels: 2
                             }
-                        }">
-                    <columns>
-                    </columns>
+                        }"
+                >
+                    <columns />
                 </TreeTable>
             </f:content>
         </f:DynamicPage>
-    </m:Page>
-
 </mvc:View>

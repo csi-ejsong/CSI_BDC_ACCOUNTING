@@ -1,0 +1,110 @@
+<mvc:View
+    xmlns:layout="sap.ui.layout"
+    controllerName="notemenu.controller.DetailPage"
+    displayBlock="true"
+    xmlns="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:m="sap.m"
+    xmlns:f="sap.f"
+>
+    <f:DynamicPage>
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+                    <m:Title text='{i18n>detailtitle}' />
+                </f:heading>
+                <f:expandedContent />
+                <f:actions>
+                    <m:Button
+                        text="조회"
+                        type="Transparent"
+                        press="onClickDisplay"
+                    />
+                    <m:Button
+                        text="저장"
+                        type="Emphasized"
+                        press="onClickSaveDetail"
+                    />
+                </f:actions>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:header>
+            <f:DynamicPageHeader pinnable="true">
+                <layout:HorizontalLayout>
+                    <layout:VerticalLayout>
+                        <m:Label text="결산년월" />
+                        <m:DatePicker
+                            id="yyyymm"
+                            displayFormat="yyyyMM"
+                            valueFormat="yyyyMM"
+                            change=".onChangeDatePicker"
+                        />
+                    </layout:VerticalLayout>
+                </layout:HorizontalLayout>
+            </f:DynamicPageHeader>
+        </f:header>
+
+        <f:content>
+            <m:VBox 
+                renderType="Bare"
+            >
+            <TreeTable 
+                id="TreeTableFinal"
+                class="sapUiSmallMarginTop"
+                rowMode= "Auto"
+                rows="{
+                        path: 'row_TreeTableFinal>/',
+                        parameters: {
+                            arrayNames: ['children'],
+                            numberOfExpandedLevels: 2
+                            }
+                        }"
+                >
+            <extension>
+                <m:OverflowToolbar >
+                    <m:Title text="연결최종"></m:Title>
+                </m:OverflowToolbar>
+            </extension>
+            </TreeTable>
+
+            <TreeTable 
+                id="TreeTableAdj"
+                class="sapUiSmallMarginTop"
+                rowMode= "Auto"
+                rows="{
+                        path: 'row_TreeTableAdj>/',
+                        parameters: {
+                            arrayNames: ['children'],
+                            numberOfExpandedLevels: 2
+                            }
+                        }">
+            <extension>
+                <m:OverflowToolbar >
+                    <m:Title text="연결조정"></m:Title>
+                </m:OverflowToolbar>
+            </extension>            
+            </TreeTable>
+
+            <TreeTable 
+                id="TreeTableCom"
+                class="sapUiSmallMarginTop"
+                rows="{
+                        path: 'row_TreeTableCom>/',
+                        parameters: {
+                            arrayNames: ['children']
+                            }
+                        }">
+            <extension>
+                <m:OverflowToolbar >
+                    <m:Title text="취합"></m:Title>
+                </m:OverflowToolbar>
+            </extension>
+            
+            </TreeTable>
+            </m:VBox>
+        </f:content>
+
+        <f:content />
+    </f:DynamicPage>
+</mvc:View>

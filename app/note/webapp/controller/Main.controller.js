@@ -1,10 +1,14 @@
 sap.ui.define([
   "sap/ui/core/mvc/Controller",
-  "sap/ui/model/json/JSONModel"
-], (Controller, JSONModel) => {
+  "sap/ui/model/json/JSONModel",
+  "sap/m/MessageToast"
+], (Controller, JSONModel, MessageToast) => {
   "use strict";
 
   return Controller.extend("note.controller.Main", {
+    /**
+     * Controller LifeCycle Function으로, 처음 페이지 로드 시 호출됨
+     */
     async onInit() {
       // Component.js에만
       this.getView().setModel(this.getOwnerComponent().getModel());
@@ -21,7 +25,7 @@ sap.ui.define([
       this.getView().setModel(jModel, "note");
     },
 
-    // 트리변환함
+    // Flat to Tree
     convertFlatToTree(data) {
       const idMap = {};
       const rootNotes = [];
@@ -39,20 +43,52 @@ sap.ui.define([
           rootNotes.push(idMap[item.note_code]);
         }
       });
-
-
       return rootNotes;
     },
+    /**
+     * '열기'버튼 클릭 시 발생하는 함수
+     * @param {*} oEvent 
+     */
     onCellButtonPress: function (oEvent) {
       const oButton = oEvent.getSource();
       const oContext = oButton.getBindingContext("note");
-      const note_code = oContext.getProperty("note_code");
+      const note_code = oContext.getProperty("note_code"),
+            note_name = oContext.getProperty("note_name");
+
+      const oNoteModel =new sap.ui.model.json.JSONModel();
+      this.getOwnerComponent().setModel(oNoteModel, "note");
+
+      const oModel = this.getOwnerComponent().getModel("note");
+      oModel.setProperty('/detail', note_name);
 
       const oRouter = this.getOwnerComponent().getRouter();
       oRouter.navTo('DetailPage', { note_code: note_code });
 
+    },
+    onPressExecute: async function (oEvent) {
+
+      const param = [];
+      try {
+        const response = await fetch(`/odata/v4/note/executeLogic`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(param)
+        });
+
+        // HTTP 통신 
+        if (!response.ok) {
+
+        }
+
+        if(response.status == 204){
+          MessageToast.show("추출 성공하였습니다.");
+        }
+
+      } catch (e) {
+        MessageToast.error("오류: " + e.message);
+      }
     }
-
-
   });
 });

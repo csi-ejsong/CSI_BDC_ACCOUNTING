@@ -32,7 +32,9 @@
     "watch-accounting-internal": "cds watch --open accounting-internal/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-accounting-internal-reconciliation": "cds watch --open accounting-internal-reconciliation/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-accounting-internal-recon-custom": "cds watch --open accounting-internal-recon-custom/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-note": "cds watch --open note/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-note": "cds watch --open note/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-note_detail": "cds watch --open note_detail/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-note_menu": "cds watch --open note_menu/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "folders": {
