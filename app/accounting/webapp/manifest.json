@@ -34,8 +34,13 @@
             "name": "accounting.ext.fragment.Ztcd1000Filter.onChangeDatePicker"
           }
         ]
+      },
+      "table": {
+        "defaultType": "ResponsiveTable",
+        "defaultCreationMode": "InlineCreationRows",
+        "creationRowCount": 5
       }
-    }
+  }
   },
   "sap.ui": {
     "technology": "UI5",
@@ -54,7 +59,6 @@
     }
   },
   "sap.ui5": {
-    
     "paths": {
       "accounting": "./",
       "accounting.ext.fragment": "./ext/fragment/"
@@ -134,7 +138,12 @@
                     },
                     "quickVariantSelection": {
                       "showCounts": true
-                    }
+                    },
+                    "creationMode": {
+                      "name": "InlineCreationRows",
+                      "InlineCreationRowsHiddenInEditMode": false
+                    },
+                    "editable": true
                   },
                   "navigationProperties": {},
                   "actions": {

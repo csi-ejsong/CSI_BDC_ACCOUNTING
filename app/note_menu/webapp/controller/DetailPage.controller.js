@@ -17,7 +17,6 @@ sap.ui.define([
       this._note_code = note_code;
 
       this.getZTCD2010(note_code);
-
     },
     async getZTCD2010(note_code) {
       //======================Reset Table Column======================
@@ -85,10 +84,6 @@ sap.ui.define([
       let listRowFinal = [...listRow],
         listRowAdj = [...listRow],
         listRowCom = [...listRow];
-
-      // let listColFinal = [...listCol],
-      //   listColAdj = [...listCol],
-      //   listColCom = [...listCol];
 
       let lstZtcd2010Final = [...listZTCD2010],
         lstZtcd2010Adj = [...listAdjZTCD2010],
@@ -278,8 +273,18 @@ sap.ui.define([
             obj.template = new sap.m.Input({
               // customData: [
               //   new sap.ui.core.CustomData({ key: 'note_col_code', value: `${ctx.note_col}` })
-              // ], 이런식으로 값 저장 가
-              value: `{row_${id}>calcforamt_${ctx.note_col}}`, editable: `{row_${id}>editable}`
+              // ], 이런식으로 값 저장 가능
+              value: {
+                parts: [
+                  { path: `row_${id}>calcforamt_${ctx.note_col}` },
+                  { value: '', type: 'sap.ui.model.type.String' }
+                ],
+                type: new sap.ui.model.type.Currency({
+                  showMeasure: false
+                })
+              }
+              , editable: `{row_${id}>editable}`
+              , textAlign:"End"
             }).addEventDelegate({
               onkeydown: function (oEvent) {
                 if (oEvent.key === "Enter" || oEvent.keyCode === 13) {
@@ -288,7 +293,21 @@ sap.ui.define([
               }.bind(this)
             });
           } else {
-            obj.template = new sap.m.Input({ value: `{row_${id}>calcforamt_${ctx.note_col}}`, editable: `{row_${id}>editable}` })
+            obj.template = new sap.m.Input({
+              value:
+              // `{row_${id}>calcforamt_${ctx.note_col}}` 
+              {
+                parts: [
+                  { path: `row_${id}>calcforamt_${ctx.note_col}` },
+                  { value: '', type: 'sap.ui.model.type.String' }
+                ],
+                type: new sap.ui.model.type.Currency({
+                  showMeasure: false
+                })
+              }
+              , editable: `{row_${id}>editable}`
+              , textAlign:"End"
+            })
           }
         }
         return obj
@@ -356,6 +375,7 @@ sap.ui.define([
         // 합계가 들어갈 note_row
         const target = dataRow.find(item => item.note_row.includes(obj.note_row));
         let tmp = target.upperrow.replace('N201020_', '');
+
         if (tmp === 'N201020') {
           tmp = '법인합계'
         } else if (tmp === 'K001') {
@@ -581,8 +601,6 @@ sap.ui.define([
 
       lstTreeRowFinal = this.convertFlatToTree(lstRowFinal);
       oModelFinal.setProperty("/", lstTreeRowFinal)
-
-
     },
     /**
      * table 내의 Column 데이터 Reset
@@ -620,6 +638,11 @@ sap.ui.define([
       const lstTreeRowAdj = oModel.getProperty("/");
       const lstRowAdj = this.flattenTree(lstTreeRowAdj);
       const lstHieAdj = this.getInfoHie(lstRowAdj);
+
+      if (oDatepicker == '') {
+        MessageToast.show("결산년월을 입력해주세요.");
+        return;
+      }
 
       // 하드코딩
       const mandt = '100',
@@ -669,23 +692,23 @@ sap.ui.define([
         in: result
       };
 
-      // try {
-      //   const response = await fetch(`/odata/v4/note/ListZTCD2010/updateZTCD2010`, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json"
-      //     },
-      //     body: JSON.stringify(param)
-      //   });
+      try {
+        const response = await fetch(`/odata/v4/note/ListZTCD2010/updateZTCD2010`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(param)
+        });
 
 
-      //   if (response.status == 204) {
-      //     MessageToast.show("저장 완료되었습니다.");
-      //   }
-      // } catch (e) {
-      //   MessageToast.show("오류: " + e.message);
+        if (response.status == 204) {
+          MessageToast.show("저장 완료되었습니다.");
+        }
+      } catch (e) {
+        MessageToast.show("오류: " + e.message);
 
-      // }
+      }
     },
     // 트리변환
     convertFlatToTree(data) {

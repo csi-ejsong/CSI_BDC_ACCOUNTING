@@ -34,7 +34,9 @@
     "watch-accounting-internal-recon-custom": "cds watch --open accounting-internal-recon-custom/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-note": "cds watch --open note/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-note_detail": "cds watch --open note_detail/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-note_menu": "cds watch --open note_menu/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-note_menu": "cds watch --open note_menu/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-excelupload-test": "cds watch --open excelupload-test/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-copypaste-test": "cds watch --open copypaste-test/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "folders": {
@@ -72,6 +74,7 @@
     "app/accounting-rev",
     "app/accounting-internal",
     "app/accounting-internal-reconciliation",
-    "app/accounting-internal-recon-custom"
+    "app/accounting-internal-recon-custom",
+    "app/excelupload-test"
   ]
 }

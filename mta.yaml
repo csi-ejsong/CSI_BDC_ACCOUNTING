@@ -101,6 +101,14 @@ modules:
       - notemenu.zip
       name: notemenu
       target-path: resources/
+    - artifacts:
+      - exceluploadtest.zip
+      name: exceluploadtest
+      target-path: resources/
+    - artifacts:
+      - copypastetest.zip
+      name: copypastetest
+      target-path: resources/
 - name: accounting
   type: html5
   path: app/accounting
@@ -194,6 +202,26 @@ modules:
 - name: notemenu
   type: html5
   path: app/note_menu
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: exceluploadtest
+  type: html5
+  path: app/excelupload-test
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: copypastetest
+  type: html5
+  path: app/copypaste-test
   build-parameters:
     build-result: dist
     builder: custom

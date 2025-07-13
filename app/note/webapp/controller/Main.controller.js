@@ -66,6 +66,9 @@ sap.ui.define([
 
     },
     onPressExecute: async function (oEvent) {
+      // 하드코딩, 만약 yyyymm과 com_code 정보 전달 할 생각이면 여기에 넣어서 param으로 전달
+      const yyyymm = '',
+            com_code = '';
 
       const param = [];
       try {

@@ -9,3 +9,5 @@ using from './note/annotations';
 using from './note_detail/annotations';
 
 using from './note_menu/annotations';
+
+using from './copypaste-test/annotations';

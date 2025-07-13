@@ -4,7 +4,7 @@ module.exports = class NoteService extends cds.ApplicationService {
         // 저장버튼 클릭 시 ZTCD2000 업데이트
         this.on('updateZTCD2000', async (req) => {
             // 디버깅용 console
-            console.log(req.data.in);
+            // console.log(req.data.in);
 
             const tx = cds.transaction(req);
             const param = req.data.in;
@@ -16,7 +16,6 @@ module.exports = class NoteService extends cds.ApplicationService {
             const now = new Date().toISOString();
             const user_id = 'SYSTEM DATA';
 
-            console.log("param:", param)
             for (const entry of param) {
                 const { note_code, note_row, note_col, calcforamt } = entry;
 
@@ -73,7 +72,7 @@ module.exports = class NoteService extends cds.ApplicationService {
                 const { mandt, yyyymm, com_code, note_code, note_row, note_col, curtype, inputtype, amt } = entry;
 
                 const existing = await tx.run(
-                    SELECT.one.from('NT_ZTCD2010').where({ mandt, yyyymm, com_code, note_code, note_row, note_col, curtype, inputtype })
+                    SELECT.one.from('NT_ZTCD2010').where({ mandt, yyyymm, com_code, note_code, note_row, note_col, curtype })
                 );
                 try {
                     if (existing) {
@@ -92,7 +91,6 @@ module.exports = class NoteService extends cds.ApplicationService {
                             INSERT.into('NT_ZTCD2010')
                                 .entries({
                                     ...entry,
-                                    curtype: curtype,
                                     create_user_id: user_id,
                                     local_create_dtm: now,
                                     system_create_dtm: now
@@ -114,43 +112,74 @@ module.exports = class NoteService extends cds.ApplicationService {
         this.on('executeLogic', async (req) => {
             const tx = cds.tx(req);
 
-            // 임의값
+            // 하드코딩
             const mandt = "100",
                 yyyymm = "202503",
                 com_code = "K001",
-                now = new Date().toISOString();
+                now = new Date().toISOString(),
+                user_id = 'SYSTEM DATA',
+                curtype = 'LC',
+                inputtype = 'EXTRACT';
 
             const lstZtcd1000 = await tx.run(SELECT.from('FM_ZTCD1000').where({ yyyymm, com_code }));
             const rstZtcd1000 = new Map(lstZtcd1000.map(data => [data.ACCOUNT_CODE, data.AMT]));
 
-            const lstZtcd2000 = await tx.run(SELECT.from('NT_ZTCD2000'));
+            const lstZtcd2000 = await tx.run(SELECT.from('NT_ZTCD2000').where());
             const rstZtcd2000 = [];
 
             let trxResult = '';
 
             for (const row of lstZtcd2000) {
+                const { NOTE_CODE, NOTE_ROW, NOTE_COL } = row;
+                const existing = await tx.run(SELECT.one.from('NT_ZTCD2010').where({ NOTE_CODE, NOTE_ROW, NOTE_COL, yyyymm, com_code }));
+
                 const sign = row.CALCFORAMT.split("+");
                 let totalAmt = 0;
 
-                for (const acct of sign) {
-                    const amt = rstZtcd1000.get(acct.trim());
-
-                    if (amt) totalAmt += Number(amt);
-                }
-
                 try {
-                    trxResult = await tx.run(
-                        UPDATE("NT_ZTCD2010")
-                            .set({ AMT: totalAmt, local_update_dtm: now })
-                            .where({
-                                MANDT: mandt,
-                                YYYYMM: yyyymm,
-                                COM_CODE: com_code,
-                                NOTE_CODE: row.NOTE_CODE,
-                                NOTE_ROW: row.NOTE_ROW,
-                                NOTE_COL: row.NOTE_COL
-                            })
-                    )
+                    for (const acct of sign) {
+                        const amt = rstZtcd1000.get(acct.trim());
+
+                        if (amt) totalAmt += Number(amt);
+                    }
+
+                    console.log( NOTE_CODE, NOTE_ROW, NOTE_COL, existing)
+
+                    if (existing) {
+                        console.log("update");
+                        trxResult = await tx.run(
+
+                            UPDATE("NT_ZTCD2010")
+                                .set({ AMT: totalAmt, inputtype: inputtype ,local_update_dtm: now, update_user_id: user_id, system_update_dtm: now })
+                                .where({
+                                    MANDT: mandt,
+                                    YYYYMM: yyyymm,
+                                    COM_CODE: com_code,
+                                    NOTE_CODE: row.NOTE_CODE,
+                                    NOTE_ROW: row.NOTE_ROW,
+                                    NOTE_COL: row.NOTE_COL
+                                })
+                        )
+                    } else {
+                        console.log("insert");
+                        trxResult = await tx.run(
+                            INSERT.into('NT_ZTCD2010')
+                                .entries({
+                                    MANDT: mandt,
+                                    YYYYMM: yyyymm,
+                                    COM_CODE: com_code,
+                                    NOTE_CODE: row.NOTE_CODE,
+                                    NOTE_ROW: row.NOTE_ROW,
+                                    NOTE_COL: row.NOTE_COL,
+                                    CURTYPE: curtype,
+                                    INPUTTYPE: inputtype,
+                                    AMT: totalAmt,
+                                    LOCAL_CREATE_DTM: now,
+                                    CREATE_USER_ID: user_id,
+                                    SYSTEM_CREATE_DTM: now
+                                })
+                        )
+                    }
                 } catch (e) {
                     await tx.rollback();
 

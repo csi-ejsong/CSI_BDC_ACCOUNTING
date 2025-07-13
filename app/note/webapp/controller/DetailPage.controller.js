@@ -1,7 +1,8 @@
 sap.ui.define([
   "sap/ui/core/mvc/Controller",
-  "sap/ui/model/json/JSONModel"
-], (BaseController, JSONModel) => {
+  "sap/ui/model/json/JSONModel",
+  "note/utils/util"
+], (BaseController, JSONModel, Util) => {
   "use strict";
 
   return BaseController.extend("note.controller.DetailPage", {
@@ -155,19 +156,18 @@ sap.ui.define([
         in: result
       };
 
-      const response = await fetch(`/odata/v4/note/ListZTCD2000/updateZTCD2000`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(param)
-      });
+      try {
+        const response = await Util.callService('/odata/v4/note/ListZTCD2000/updateZTCD2000', "POST", param)
 
-      if (!response.ok) {
-        throw new Error("Failed to update ZTCD2000: " + response.statusText);
+        if (response.status == 204) {
+          sap.m.MessageToast.show('저장이 완료되었습니다.');
+        } else {
+          sap.m.MessageToast.show('저장이 실패하였습니.');
+        }
       }
-
-      sap.m.MessageToast.show('저장이 완료되었습니다.');
+      catch (err) {
+        console.log("err", err.message, err)
+      }
 
     },
     // 트리변환

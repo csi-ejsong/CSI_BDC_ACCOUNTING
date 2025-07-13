@@ -1,0 +1,140 @@
+<mvc:View
+    controllerName="copypastetest.controller.Main"
+    xmlns="sap.ui.table"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:u="sap.ui.unified"
+    xmlns:c="sap.ui.core"
+    xmlns:m="sap.m"
+    height="100%"
+>
+    <m:Page
+        showHeader="false"
+        enableScrolling="false"
+        class="sapUiContentPadding"
+    >
+        <m:content>
+            <Table
+                id="table"
+                rows="{
+					path: 'model>/items',
+					parameters: {operationMode: 'Server'}
+				}"
+                threshold="15"
+                enableBusyIndicator="false"
+                ariaLabelledBy="title"
+                paste="onPaste"
+            >
+                <plugins>
+                    <plugins.MultiSelectionPlugin
+                        limit="100"
+                        enableNotification="true"
+                        selectionMode="MultiToggle"
+                    />
+                </plugins>
+                <noData>
+                    <!-- <m:BusyIndicator class="sapUiMediumMargin"/> -->
+                </noData>
+                <extension>
+                    <m:OverflowToolbar
+                        id="toolbar"
+                        style="Clear"
+                    >
+                        <m:Title
+                            id="title"
+                            text="Products"
+                        />
+                        <m:ToolbarSpacer />
+                        <m:Select
+                            items="{ui>/SelectionMode}"
+                            selectedKey="{ui>/initial/SelectionMode}"
+                            change=".onSelectChange"
+                        >
+                            <c:Item
+                                key="{ui>mode}"
+                                text="{ui>mode}"
+                            />
+                        </m:Select>
+                        <m:Button>
+                            <m:dependents>
+                                <m:plugins.PasteProvider pasteFor="table" />
+                            </m:dependents>
+                        </m:Button>
+                    </m:OverflowToolbar>
+                </extension>
+                <columns>
+                    <Column
+                        sortProperty="comCode"
+                        filterProperty="comCode"
+                        autoResizable="true"
+                        width="11rem"
+                    >
+                        <m:Label text="회사코드" />
+                        <template>
+                            <m:Text
+                                text="{model>com_code}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        sortProperty="comName"
+                        filterProperty="comName"
+                        autoResizable="true"
+                        width="11rem"
+                    >
+                        <m:Label text="회사명" />
+                        <template>
+                            <m:Text
+                                text="{model>com_name}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        sortProperty="accountCode"
+                        filterProperty="accountCode"
+                        autoResizable="true"
+                        width="6rem"
+                    >
+                        <m:Label text="계정코드" />
+                        <!-- <m:Label text="{/#Product/ProductID/@sap:label}" /> -->
+                        <template>
+                            <m:Text
+                                text="{model>account_code}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        sortProperty="ProductID"
+                        filterProperty="ProductID"
+                        autoResizable="true"
+                        width="6rem"
+                    >
+                        <m:Label text="계정명" />
+                        <template>
+                            <m:Text
+                                text="{model>account_name}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        sortProperty="amt"
+                        filterProperty="amt"
+                        autoResizable="true"
+                        width="6rem"
+                    >
+                        <m:Label text="AMT" />
+                        <template>
+                            <m:Text
+                                text="{model>amt}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                </columns>
+            </Table>
+        </m:content>
+    </m:Page>
+</mvc:View>

@@ -28,7 +28,8 @@
                 rows="{
                     path: 'note>/',
                     parameters: {
-                        arrayNames: ['children']
+                        arrayNames: ['children'],
+                        numberOfExpandedLevels: 2
                     }
                 }"
                 alternateRowColors="false"

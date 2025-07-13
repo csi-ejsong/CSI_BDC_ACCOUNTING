@@ -9,22 +9,29 @@ namespace cm;
 service excelUploadService {
     
     entity ListCompany as projection on Company;
+    entity ListAccount as projection on Account;
+    entity ListTransType as projection on TransType;
 
+    // @odata.draft.enabled    Aaed
     entity ListZTCD1000 as projection on ZTCD1000 {
     
         key mandt,
         key yyyymm,
+        company,
         key com_code,
-        com_name,
+        account,
         key account_code,
-        account_name,
         amt,
 
         local_create_dtm: Timestamp,
         create_user_id: String,
         system_create_dtm: Timestamp,
-
     };
+    
+    annotate ListZTCD1000 with @UI.LineItem: [
+        { Value: account.account_name},
+        { Value: company.com_name},
+    ];
     entity ListZTCD1010 as projection on ZTCD1010 {
     
         key mandt,     
@@ -47,9 +54,6 @@ service excelUploadService {
         system_create_dtm: Timestamp,
 
     };
-    entity ListAccount as projection on Account;
-
-    entity ListTransType as projection on TransType;
     
 }
 

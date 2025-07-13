@@ -4,6 +4,10 @@ annotate service.ListZTCD1000 with @(
     Capabilities.SearchRestrictions: {
         Searchable: false
     },
+    Capabilities.InsertRestrictions: {
+        Insertable: true,
+        RequiredProperties : ['com_code', 'amt']
+    },
 
     UI.FieldGroup #GeneratedGroup: {
         $Type: 'UI.FieldGroupType',
@@ -84,18 +88,8 @@ annotate service.ListZTCD1000 with @(
         },
         {
             $Type: 'UI.DataField',
-            Label: '계정명',
-            Value: account_name,
-        },
-        {
-            $Type: 'UI.DataField',
             Label: '회사코드',
             Value: com_code,
-        },
-        {
-            $Type: 'UI.DataField',
-            Label: '회사명',
-            Value: com_name,
         },
         {
             $Type: 'UI.DataField',
@@ -160,4 +154,5 @@ annotate service.ListZTCD1000 with {
         Common.Label : '{i18n>Key}',
         )
 };
+
 
